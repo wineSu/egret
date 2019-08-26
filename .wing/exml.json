@@ -1,0 +1,66 @@
+{
+  "global": {
+    "globalBackgroundAlpha": 100,
+    "globalBackgroundX": 0,
+    "globalBackgroundY": 0,
+    "globalBackgroundWidth": -1,
+    "globalBackgroundHeight": -1,
+    "globalBackgroundColor": "#ffffff",
+    "globalBackgroundImage": "",
+    "globalAutoLayerMarkEnable": false,
+    "globalAdsorbEnable": true,
+    "globalRulerEnable": true,
+    "gridColor": 8421504,
+    "gridEnabled": false,
+    "gridSize": 20
+  },
+  "16c6abe15a6": {
+    "backgroundType": "user",
+    "backgroundImage": "E:\\WORK\\testGf\\resource\\assets\\bg.png",
+    "backgroundAlpha": 100
+  },
+  "16c6ad3da9e": {
+    "backgroundType": "user",
+    "backgroundX": 0,
+    "backgroundY": 0,
+    "backgroundWidth": -1,
+    "backgroundHeight": -1,
+    "useBgImage": true,
+    "useBgColor": true,
+    "backgroundAlpha": "50",
+    "guideLinesEnabled": false
+  },
+  "16c6aea8d55": {
+    "guideLinesEnabled": false
+  },
+  "16c6aec534f": {
+    "backgroundType": "user"
+  },
+  "16c75860d46": {
+    "backgroundX": 0,
+    "backgroundY": 0,
+    "backgroundWidth": -1,
+    "backgroundHeight": -1
+  },
+  "16c75860d47": {
+    "useBgImage": true,
+    "useBgColor": true,
+    "backgroundAlpha": 100,
+    "backgroundType": "null",
+    "backgroundX": 0,
+    "backgroundY": 0,
+    "backgroundWidth": -1,
+    "backgroundHeight": -1
+  },
+  "16cb24a55ce": {
+    "backgroundType": "user",
+    "backgroundAlpha": "80",
+    "backgroundColor": "#070101",
+    "backgroundX": 0,
+    "backgroundY": 0,
+    "backgroundWidth": -1,
+    "backgroundHeight": -1,
+    "useBgImage": true,
+    "useBgColor": true
+  }
+}

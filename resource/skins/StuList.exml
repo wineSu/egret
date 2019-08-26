@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<e:Skin xmlns:e="http://ns.egret.com/eui" xmlns:ns1="*" xmlns:w="http://ns.egret.com/wing" xmlns:tween="egret.tween.*">
+	<w:Declarations>
+		<tween:TweenGroup id="stuPeo">
+			<tween:TweenItem target="{peo}">
+				<tween:Wait duration="100"/>
+				<tween:Set>
+					<tween:props>
+						<e:Object alpha="{0}"/>
+					</tween:props>
+				</tween:Set>
+				<tween:Wait duration="400"/>
+				<tween:Set>
+					<tween:props>
+						<e:Object alpha="{1}"/>
+					</tween:props>
+				</tween:Set>
+			</tween:TweenItem>
+			<tween:TweenItem target="{peoMove}">
+				<tween:Wait duration="100"/>
+				<tween:Set>
+					<tween:props>
+						<e:Object alpha="{1}"/>
+					</tween:props>
+				</tween:Set>
+				<tween:Wait duration="400"/>
+				<tween:Set>
+					<tween:props>
+						<e:Object alpha="{0}"/>
+					</tween:props>
+				</tween:Set>
+			</tween:TweenItem>
+		</tween:TweenGroup>
+	</w:Declarations>
+	<e:Group id="group" width="100" height="120" y="0">
+		<e:Label text="Label" id="stuname" x="8" y="11" textColor="0xfefd00" size="20" strokeColor="0x1d1c25" stroke="2" maxWidth="120" maxHeight="24" wordWrap="false" width="80" textAlign="center"/>
+		<e:Image id="peoMove" width="68" height="81" x="15" y="37" source="peoMove_png" alpha="0" anchorOffsetY="0"/>
+		<e:Image id="peo" width="68" height="81" x="15" y="37" source="peo_png" anchorOffsetY="0"/>
+	</e:Group>
+
+</e:Skin>

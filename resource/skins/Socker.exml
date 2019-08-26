@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<e:Skin width="44" height="23" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing" xmlns:tween="egret.tween.*">
+	<w:Declarations>
+		<tween:TweenGroup id="scokerMove">
+			<tween:TweenItem target="{socker}">
+				<tween:To duration="500" ease="sineIn">
+					<tween:props>
+						<e:Object alpha="{0}" y="{-50}"/>
+					</tween:props>
+				</tween:To>
+			</tween:TweenItem>
+		</tween:TweenGroup>
+	</w:Declarations>
+	<e:Label id="socker" text="-20" x="0" y="0" textColor="0xefd915" strokeColor="0x351a1a" stroke="2" size="20" italic="true"/>
+</e:Skin>
