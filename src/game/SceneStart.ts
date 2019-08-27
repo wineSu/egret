@@ -10,7 +10,10 @@ class SceneStart extends Scene{
     private raremc: egret.MovieClip;       //MovieClip  怪兽
     private blueRaremc: MovieClipGroup;    //MovieClip  小怪兽
     private redRaremc: MovieClipGroup;     //MovieClip  小怪兽
-    private pros:eui.Image;                //血条
+    private pros:eui.Image;                //血条类
+    private uiTotalWid: number = 94;       //ui中的血条宽度
+    private totalSocker:number;            //总血量
+    private everyBlood:number;             //每次攻击掉血
     private socker:eui.Group;              //分数组
     public time: egret.tween.TweenGroup;   //倒计时
     public stumcArr: StuList[];            //学生实例集合
@@ -37,14 +40,12 @@ class SceneStart extends Scene{
         //小怪兽
         this.blueRaremc = new MovieClipGroup('blueRaremc', 'wait');
         this.blueRaremc.position(320, 30);
-        if(window['isCrazy']){
-            this.niu.addChild(this.blueRaremc.Mc);
-        }
-
+        
         //小怪兽
         this.redRaremc = new MovieClipGroup('redRare', 'wait');
         this.redRaremc.position(40, 340);
         if(window['isCrazy']){
+            this.niu.addChild(this.blueRaremc.Mc);
             this.niu.addChild(this.redRaremc.Mc);
         }
         
@@ -52,6 +53,12 @@ class SceneStart extends Scene{
             //添加学生
             this.addStudents(data)
         })
+
+        //初始数据
+        let getinit:any = getInitParam();
+        this.everyBlood = getinit.every;
+        this.totalSocker = getinit.total;
+
         //怪兽动作监听
         this.raremc.addEventListener(egret.MovieClipEvent.FRAME_LABEL,(e:egret.MovieClipEvent)=>{
            if(e.frameLabel == 'curend'){
@@ -62,12 +69,20 @@ class SceneStart extends Scene{
                }
            }
         },this);
+
+        //js回调  攻击
+        this.stage.addEventListener("jsNotifyts",this.doTsPlay,this);
+    }
+
+    //监听攻击  用户触发
+    public doTsPlay(){
+        this.goPlay()
     }
 
     //3s  倒计时完成
     private onTweenGroupComplete(): void {
         //渲染界面
-        this.renderGame()
+        this.rarePaly()
         //开启30s倒计时
         this.djsTimer()
         //关闭提示按键
@@ -102,6 +117,10 @@ class SceneStart extends Scene{
         //获取当前学生和老师信息
         let stuData: Object = JSON.parse(data).data;
         this.stuList = (stuData as any).studentlist;
+        // this.stuList = [
+        //     {"studentuid":"10000404","nickname":"\u5f20\u6c38\u5bbe"},  
+        //     {"studentuid":"12740442","nickname":"\u718a\u5b69\u5b50"}
+        // ]
         let teacher: (Object | null)[] = (stuData as any).teacherinfo;
         //添加老师信息
         this.teacherName.text = teacher["name"] || '' +'老师';
@@ -168,34 +187,17 @@ class SceneStart extends Scene{
         this.globalPointNiu = globalPointNiu;
     }
 
-    public renderGame() {
-        //怪兽开始动作
-        this.rarePaly()
-        let totalSocker:number = 97;
-        let len: number = this.stuList.length;
-        //初始执行一个动作
-        this.goPlay(totalSocker)
-        //创建所有人的动作
-        for(let i = 0; i < len; i++){
-            let index:number = Math.round(Math.random()*2) + 1;
-            let st = setInterval(()=>{
-                //结束游戏
-                if(this.endFlag){
-                    clearTimeout(st)
-                    return false
-                }
-                //分数控制
-                totalSocker -= 97 / (len * 20)
-                if(totalSocker < 2){
-                    totalSocker = 2
-                }
-                this.goPlay(totalSocker)
-            },index * 800)
-        }
-	}
-
     //攻击
-    private goPlay(totalSocker: number){
+    public goPlay(){
+        if(this.endFlag){
+            return false
+        }
+        let totalSocker:number = this.totalSocker; //真实血条宽度
+        let uiTotalWid:number = this.uiTotalWid;   //ui中的血条宽度
+        let everyBlood:number = this.everyBlood;   //真实掉血量
+        let uiBlood: number = uiTotalWid / totalSocker * everyBlood; //视觉掉血量
+        this.uiTotalWid -= uiBlood;
+
         let stumcArr = this.stumcArr;
         let index:number = Math.round(Math.random()*(stumcArr.length-1));
         stumcArr[index].plays();
@@ -209,11 +211,12 @@ class SceneStart extends Scene{
                 this.changeStatues('cur')
             }
             let prosTw = egret.Tween.get( this.pros );
+            //计算视觉掉血量 totalSocker / (this.totalSocker - this.everyBlood) = ? / this.everyBlood
             prosTw.to( {
-                width: totalSocker
+                width: this.uiTotalWid
             }, 200 );
             let sockerObj: Socker = new Socker();
-            sockerObj.sockernum = 4 + Math.round(Math.random());
+            sockerObj.sockernum = this.everyBlood + Math.round(Math.random());
             sockerObj.positionX = Math.round(Math.random() * 20) + 5;
             this.socker.addChild(sockerObj);
         })
@@ -231,9 +234,9 @@ class SceneStart extends Scene{
     }
 
     private rarePaly(){
-        this.raremcFactory.plays()
-        this.blueRaremc.plays()
-        this.redRaremc.plays()
+        this.raremcFactory.plays(-1)
+        this.blueRaremc.plays(-1)
+        this.redRaremc.plays(-1)
     }
 
 }

@@ -15,6 +15,7 @@ var SceneStart = (function (_super) {
     __extends(SceneStart, _super);
     function SceneStart() {
         var _this = _super.call(this) || this;
+        _this.uiTotalWid = 94; //ui中的血条宽度
         _this.skinName = 'resource/skins/SceneStartSkin.exml';
         return _this;
     }
@@ -30,19 +31,21 @@ var SceneStart = (function (_super) {
         //小怪兽
         this.blueRaremc = new MovieClipGroup('blueRaremc', 'wait');
         this.blueRaremc.position(320, 30);
-        if (window['isCrazy']) {
-            this.niu.addChild(this.blueRaremc.Mc);
-        }
         //小怪兽
         this.redRaremc = new MovieClipGroup('redRare', 'wait');
         this.redRaremc.position(40, 340);
         if (window['isCrazy']) {
+            this.niu.addChild(this.blueRaremc.Mc);
             this.niu.addChild(this.redRaremc.Mc);
         }
         callJsFunc(function (data) {
             //添加学生
             _this.addStudents(data);
         });
+        //初始数据
+        var getinit = getInitParam();
+        this.everyBlood = getinit.every;
+        this.totalSocker = getinit.total;
         //怪兽动作监听
         this.raremc.addEventListener(egret.MovieClipEvent.FRAME_LABEL, function (e) {
             if (e.frameLabel == 'curend') {
@@ -54,11 +57,17 @@ var SceneStart = (function (_super) {
                 }
             }
         }, this);
+        //js回调  攻击
+        this.stage.addEventListener("jsNotifyts", this.doTsPlay, this);
+    };
+    //监听攻击  用户触发
+    SceneStart.prototype.doTsPlay = function () {
+        this.goPlay();
     };
     //3s  倒计时完成
     SceneStart.prototype.onTweenGroupComplete = function () {
         //渲染界面
-        this.renderGame();
+        this.rarePaly();
         //开启30s倒计时
         this.djsTimer();
         //关闭提示按键
@@ -92,6 +101,10 @@ var SceneStart = (function (_super) {
         //获取当前学生和老师信息
         var stuData = JSON.parse(data).data;
         this.stuList = stuData.studentlist;
+        // this.stuList = [
+        //     {"studentuid":"10000404","nickname":"\u5f20\u6c38\u5bbe"},  
+        //     {"studentuid":"12740442","nickname":"\u718a\u5b69\u5b50"}
+        // ]
         var teacher = stuData.teacherinfo;
         //添加老师信息
         this.teacherName.text = teacher["name"] || '' + '老师';
@@ -154,38 +167,17 @@ var SceneStart = (function (_super) {
         this.stumcArr = stumcArr;
         this.globalPointNiu = globalPointNiu;
     };
-    SceneStart.prototype.renderGame = function () {
-        var _this = this;
-        //怪兽开始动作
-        this.rarePaly();
-        var totalSocker = 97;
-        var len = this.stuList.length;
-        //初始执行一个动作
-        this.goPlay(totalSocker);
-        var _loop_1 = function (i) {
-            var index = Math.round(Math.random() * 2) + 1;
-            var st = setInterval(function () {
-                //结束游戏
-                if (_this.endFlag) {
-                    clearTimeout(st);
-                    return false;
-                }
-                //分数控制
-                totalSocker -= 97 / (len * 20);
-                if (totalSocker < 2) {
-                    totalSocker = 2;
-                }
-                _this.goPlay(totalSocker);
-            }, index * 800);
-        };
-        //创建所有人的动作
-        for (var i = 0; i < len; i++) {
-            _loop_1(i);
-        }
-    };
     //攻击
-    SceneStart.prototype.goPlay = function (totalSocker) {
+    SceneStart.prototype.goPlay = function () {
         var _this = this;
+        if (this.endFlag) {
+            return false;
+        }
+        var totalSocker = this.totalSocker; //真实血条宽度
+        var uiTotalWid = this.uiTotalWid; //ui中的血条宽度
+        var everyBlood = this.everyBlood; //真实掉血量
+        var uiBlood = uiTotalWid / totalSocker * everyBlood; //视觉掉血量
+        this.uiTotalWid -= uiBlood;
         var stumcArr = this.stumcArr;
         var index = Math.round(Math.random() * (stumcArr.length - 1));
         stumcArr[index].plays();
@@ -199,11 +191,12 @@ var SceneStart = (function (_super) {
                 _this.changeStatues('cur');
             }
             var prosTw = egret.Tween.get(_this.pros);
+            //计算视觉掉血量 totalSocker / (this.totalSocker - this.everyBlood) = ? / this.everyBlood
             prosTw.to({
-                width: totalSocker
+                width: _this.uiTotalWid
             }, 200);
             var sockerObj = new Socker();
-            sockerObj.sockernum = 4 + Math.round(Math.random());
+            sockerObj.sockernum = _this.everyBlood + Math.round(Math.random());
             sockerObj.positionX = Math.round(Math.random() * 20) + 5;
             _this.socker.addChild(sockerObj);
         });
@@ -219,9 +212,9 @@ var SceneStart = (function (_super) {
         this.redRaremc.status = name;
     };
     SceneStart.prototype.rarePaly = function () {
-        this.raremcFactory.plays();
-        this.blueRaremc.plays();
-        this.redRaremc.plays();
+        this.raremcFactory.plays(-1);
+        this.blueRaremc.plays(-1);
+        this.redRaremc.plays(-1);
     };
     return SceneStart;
 }(Scene));

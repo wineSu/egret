@@ -110,6 +110,29 @@
     function callJsFunc(callback) {
         ajax('//apivps.qingguo.com/dualteachersys/winsys/getclassstudentlist.php?tvclientcode=5b2a1fa3b2dbb86b13f0444b31f195&listtype=inclass',callback)
     }
+
+    function getInitParam(){
+        return {
+            mode: 1,
+            total: 100,
+            every: 3
+        }
+    }
+
+    var hasLoadEgret = false,
+        context;
+
+    setTimeout(function(){
+        hasLoadEgret = true;
+        context = egret.MainContext.instance;
+    },4000);
+
+    function goPlay(){
+        if(hasLoadEgret){
+            context.stage.dispatchEventWith("jsNotifyts", false);
+        }
+    }
+
 </script>
 </body>
 
