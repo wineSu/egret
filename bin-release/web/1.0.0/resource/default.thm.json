@@ -1,0 +1,10 @@
+{
+	"autoGenerateExmlsList": true,
+	"exmls": [
+		"resource/skins/Bao.exml",
+		"resource/skins/SceneStartSkin.exml",
+		"resource/skins/Socker.exml",
+		"resource/skins/StuList.exml"
+	],
+	"path": "resource/default.thm.json"
+}

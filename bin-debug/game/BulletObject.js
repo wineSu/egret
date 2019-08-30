@@ -61,7 +61,7 @@ var bullet = (function (_super) {
             this.flag = true;
             this.bulletObj.gotoAndPlay('move', -1);
         }
-        this.x -= 18;
+        this.x -= 30;
         // //比值求y点
         var y = ((-this.x) * this.a.clienty / this.a.clientx);
         this.y = y;

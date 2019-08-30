@@ -15,7 +15,7 @@ var SceneStart = (function (_super) {
     __extends(SceneStart, _super);
     function SceneStart() {
         var _this = _super.call(this) || this;
-        _this.uiTotalWid = 94; //ui中的血条宽度
+        _this.uiTotalWid = 122; //ui中的血条宽度
         _this.skinName = 'resource/skins/SceneStartSkin.exml';
         return _this;
     }
@@ -54,15 +54,27 @@ var SceneStart = (function (_super) {
                 }
                 else {
                     _this.changeStatues('wait');
+                    _this.rarePaly();
                 }
             }
         }, this);
         //js回调  攻击
         this.stage.addEventListener("jsNotifyts", this.doTsPlay, this);
+        //游戏结束
+        this.stage.addEventListener("gameEndCallback", this.doTsPlay, this);
     };
     //监听攻击  用户触发
     SceneStart.prototype.doTsPlay = function () {
         this.goPlay();
+    };
+    SceneStart.prototype.doGameEnd = function () {
+        var _this = this;
+        this.endFlag = true;
+        setTimeout(function () {
+            //宝箱开启
+            var bao = new Bao();
+            _this.addChild(bao);
+        }, 1000);
     };
     //3s  倒计时完成
     SceneStart.prototype.onTweenGroupComplete = function () {
@@ -86,13 +98,7 @@ var SceneStart = (function (_super) {
             timeObj['text'] = '00:' + (count > 9 ? count : "0" + count);
         }
         function onTimerComplete(evt) {
-            var _this = this;
-            this.endFlag = true;
-            setTimeout(function () {
-                //宝箱开启
-                var bao = new Bao();
-                _this.addChild(bao);
-            }, 1000);
+            this.doGameEnd();
         }
     };
     //渲染学生
@@ -166,6 +172,9 @@ var SceneStart = (function (_super) {
         }
         this.stumcArr = stumcArr;
         this.globalPointNiu = globalPointNiu;
+        // setInterval(()=>{
+        //     this.goPlay()
+        // },2000)
     };
     //攻击
     SceneStart.prototype.goPlay = function () {
@@ -177,6 +186,9 @@ var SceneStart = (function (_super) {
         var uiTotalWid = this.uiTotalWid; //ui中的血条宽度
         var everyBlood = this.everyBlood; //真实掉血量
         var uiBlood = uiTotalWid / totalSocker * everyBlood; //视觉掉血量
+        if (this.uiTotalWid < 5) {
+            this.uiTotalWid = 5;
+        }
         this.uiTotalWid -= uiBlood;
         var stumcArr = this.stumcArr;
         var index = Math.round(Math.random() * (stumcArr.length - 1));

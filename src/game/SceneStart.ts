@@ -11,7 +11,7 @@ class SceneStart extends Scene{
     private blueRaremc: MovieClipGroup;    //MovieClip  小怪兽
     private redRaremc: MovieClipGroup;     //MovieClip  小怪兽
     private pros:eui.Image;                //血条类
-    private uiTotalWid: number = 94;       //ui中的血条宽度
+    private uiTotalWid: number = 122;       //ui中的血条宽度
     private totalSocker:number;            //总血量
     private everyBlood:number;             //每次攻击掉血
     private socker:eui.Group;              //分数组
@@ -66,17 +66,28 @@ class SceneStart extends Scene{
                    this.changeStatues('die')
                }else{
                    this.changeStatues('wait')
+                   this.rarePaly()
                }
            }
         },this);
 
         //js回调  攻击
         this.stage.addEventListener("jsNotifyts",this.doTsPlay,this);
+        //游戏结束
+        this.stage.addEventListener("gameEndCallback",this.doTsPlay,this);
     }
 
     //监听攻击  用户触发
     public doTsPlay(){
         this.goPlay()
+    }
+    public doGameEnd(){
+        this.endFlag = true
+        setTimeout(()=>{
+            //宝箱开启
+            let bao: Bao = new Bao()
+            this.addChild(bao);
+        },1000)
     }
 
     //3s  倒计时完成
@@ -102,12 +113,7 @@ class SceneStart extends Scene{
             timeObj['text'] = '00:'+ (count > 9 ? count : "0" + count);
         }
         function onTimerComplete(evt:egret.TimerEvent):void {
-            this.endFlag = true
-            setTimeout(()=>{
-                //宝箱开启
-                let bao: Bao = new Bao()
-                this.addChild(bao);
-            },1000)
+            this.doGameEnd()
         }
     }
     
@@ -185,6 +191,10 @@ class SceneStart extends Scene{
         }
         this.stumcArr = stumcArr;
         this.globalPointNiu = globalPointNiu;
+        
+        // setInterval(()=>{
+        //     this.goPlay()
+        // },2000)
     }
 
     //攻击
@@ -196,6 +206,9 @@ class SceneStart extends Scene{
         let uiTotalWid:number = this.uiTotalWid;   //ui中的血条宽度
         let everyBlood:number = this.everyBlood;   //真实掉血量
         let uiBlood: number = uiTotalWid / totalSocker * everyBlood; //视觉掉血量
+        if(this.uiTotalWid < 5){
+            this.uiTotalWid = 5
+        }
         this.uiTotalWid -= uiBlood;
 
         let stumcArr = this.stumcArr;

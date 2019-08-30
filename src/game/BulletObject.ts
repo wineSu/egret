@@ -57,7 +57,7 @@ class bullet extends eui.Group{
             this.flag = true;
             this.bulletObj.gotoAndPlay('move',-1);
         }
-        this.x -= 18;
+        this.x -= 30;
         // //比值求y点
         let y:number = ((-this.x) * (this.a as any).clienty / (this.a as any).clientx);
         this.y = y;

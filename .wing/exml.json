@@ -7,7 +7,7 @@
     "globalBackgroundHeight": -1,
     "globalBackgroundColor": "#ffffff",
     "globalBackgroundImage": "",
-    "globalAutoLayerMarkEnable": false,
+    "globalAutoLayerMarkEnable": true,
     "globalAdsorbEnable": true,
     "globalRulerEnable": true,
     "gridColor": 8421504,
