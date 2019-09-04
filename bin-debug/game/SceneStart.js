@@ -15,7 +15,7 @@ var SceneStart = (function (_super) {
     __extends(SceneStart, _super);
     function SceneStart() {
         var _this = _super.call(this) || this;
-        _this.uiTotalWid = 122; //ui中的血条宽度
+        _this.uiTotalWid = 127; //ui中的血条宽度
         _this.skinName = 'resource/skins/SceneStartSkin.exml';
         return _this;
     }
@@ -39,8 +39,40 @@ var SceneStart = (function (_super) {
             this.niu.addChild(this.redRaremc.Mc);
         }
         callJsFunc(function (data) {
+            //获取当前学生和老师信息
+            var stuData = JSON.parse(data).data;
+            _this.stuList = stuData.studentlist;
+            // this.stuList = [
+            //     {"studentuid":"10000404","nickname":"\u5f20\u6c38\u5bbe"},  
+            //     {"studentuid":"12740442","nickname":"\u718a\u5b69\u5b50"}
+            // ]
+            var teacher = stuData.teacherinfo;
+            //添加老师信息
+            _this.teacherName.text = teacher["name"] || '' + '老师';
+            //老师头像
+            var url = teacher['avatar'];
+            var imgLoader = new egret.ImageLoader();
+            imgLoader.crossOrigin = "anonymous"; // 跨域请求
+            imgLoader.load(url); // 去除链接中的转义字符‘\’        
+            imgLoader.once(egret.Event.COMPLETE, function (evt) {
+                if (evt.currentTarget.data) {
+                    var texture = new egret.Texture();
+                    texture.bitmapData = evt.currentTarget.data;
+                    var bitmap = new egret.Bitmap(texture);
+                    bitmap.width = 140;
+                    bitmap.height = 140;
+                    _this.teacherInfor.addChild(bitmap);
+                    _this.teacherInfor.setChildIndex(bitmap, 0);
+                }
+            }, _this);
             //添加学生
-            _this.addStudents(data);
+            _this.addStudents();
+            //声音加载
+            // this.frieSound = RES.getRes("frie_mp3");
+            // this.attackedSound = RES.getRes("attacked_mp3");
+            // this.startSound = RES.getRes("start_mp3");
+            // this.startSound.play(0, 1);
+            startSound();
         });
         //初始数据
         var getinit = getInitParam();
@@ -50,7 +82,7 @@ var SceneStart = (function (_super) {
         this.raremc.addEventListener(egret.MovieClipEvent.FRAME_LABEL, function (e) {
             if (e.frameLabel == 'curend') {
                 if (_this.endFlag) {
-                    _this.changeStatues('die');
+                    //    this.changeStatues('die')
                 }
                 else {
                     _this.changeStatues('wait');
@@ -61,20 +93,19 @@ var SceneStart = (function (_super) {
         //js回调  攻击
         this.stage.addEventListener("jsNotifyts", this.doTsPlay, this);
         //游戏结束
-        this.stage.addEventListener("gameEndCallback", this.doTsPlay, this);
+        this.stage.addEventListener("gameEndCallback", this.doGameEnd, this);
     };
     //监听攻击  用户触发
     SceneStart.prototype.doTsPlay = function () {
         this.goPlay();
     };
     SceneStart.prototype.doGameEnd = function () {
-        var _this = this;
         this.endFlag = true;
-        setTimeout(function () {
-            //宝箱开启
-            var bao = new Bao();
-            _this.addChild(bao);
-        }, 1000);
+        this.changeStatues('die');
+        var prosTw = egret.Tween.get(this.pros);
+        prosTw.to({
+            width: 0
+        }, 200);
     };
     //3s  倒计时完成
     SceneStart.prototype.onTweenGroupComplete = function () {
@@ -84,6 +115,8 @@ var SceneStart = (function (_super) {
         this.djsTimer();
         //关闭提示按键
         this.tip.scaleX = 0;
+        this.tit.scaleX = 0;
+        playBg();
     };
     //30s倒计时
     SceneStart.prototype.djsTimer = function () {
@@ -102,34 +135,7 @@ var SceneStart = (function (_super) {
         }
     };
     //渲染学生
-    SceneStart.prototype.addStudents = function (data) {
-        var _this = this;
-        //获取当前学生和老师信息
-        var stuData = JSON.parse(data).data;
-        this.stuList = stuData.studentlist;
-        // this.stuList = [
-        //     {"studentuid":"10000404","nickname":"\u5f20\u6c38\u5bbe"},  
-        //     {"studentuid":"12740442","nickname":"\u718a\u5b69\u5b50"}
-        // ]
-        var teacher = stuData.teacherinfo;
-        //添加老师信息
-        this.teacherName.text = teacher["name"] || '' + '老师';
-        //老师头像
-        var url = teacher['avatar'];
-        var imgLoader = new egret.ImageLoader();
-        imgLoader.crossOrigin = "anonymous"; // 跨域请求
-        imgLoader.load(url); // 去除链接中的转义字符‘\’        
-        imgLoader.once(egret.Event.COMPLETE, function (evt) {
-            if (evt.currentTarget.data) {
-                var texture = new egret.Texture();
-                texture.bitmapData = evt.currentTarget.data;
-                var bitmap = new egret.Bitmap(texture);
-                bitmap.width = 140;
-                bitmap.height = 140;
-                _this.teacherInfor.addChild(bitmap);
-                _this.teacherInfor.setChildIndex(bitmap, 0);
-            }
-        }, this);
+    SceneStart.prototype.addStudents = function () {
         //怪兽局部坐标  局部中心为观察点
         var niuPointer = {
             x: this.raremc.x + this.raremc.width,
@@ -182,6 +188,7 @@ var SceneStart = (function (_super) {
         if (this.endFlag) {
             return false;
         }
+        frieSound(false);
         var totalSocker = this.totalSocker; //真实血条宽度
         var uiTotalWid = this.uiTotalWid; //ui中的血条宽度
         var everyBlood = this.everyBlood; //真实掉血量
@@ -197,6 +204,7 @@ var SceneStart = (function (_super) {
         var bulletObj = stumcArr[index].pool.getObject('0xFF0000', stumcArr[index].globalPointStu, stumcArr[index].pointer, stumcArr[index].degree);
         //移动注册 添加碰撞回调
         bulletObj.move(this.globalPointNiu, function () {
+            frieSound(true);
             //回收
             stumcArr[index].pool.returnObject(bulletObj);
             if (!_this.endFlag) {

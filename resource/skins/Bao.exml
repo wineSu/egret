@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<e:Skin width="1440" height="900" xmlns:e="http://ns.egret.com/eui">
-	<e:Rect width="1440" height="900" x="0" y="0" fillAlpha="0.7"/>
-	<e:Group width="200" id="bg" height="200" x="440" y="223"/>
-</e:Skin>

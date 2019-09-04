@@ -101,13 +101,13 @@ var Main = (function (_super) {
                         _a.trys.push([0, 4, , 5]);
                         loadingView = new LoadingUI();
                         this.stage.addChild(loadingView);
-                        // await RES.loadConfig("resource/default.res.json", "resource/");
-                        return [4 /*yield*/, RES.loadConfig("default.res.json", "https://jicvps.qingguo.com/pcWork/game/resource/")];
+                        return [4 /*yield*/, RES.loadConfig("resource/default.res.json", "resource/")];
                     case 1:
-                        // await RES.loadConfig("resource/default.res.json", "resource/");
                         _a.sent();
+                        // await RES.loadConfig("default.res.json", "https://jicvps.qingguo.com/pcWork/game/resource/");
                         return [4 /*yield*/, this.loadTheme()];
                     case 2:
+                        // await RES.loadConfig("default.res.json", "https://jicvps.qingguo.com/pcWork/game/resource/");
                         _a.sent();
                         return [4 /*yield*/, RES.loadGroup("preload", 0, loadingView)];
                     case 3:
@@ -128,8 +128,8 @@ var Main = (function (_super) {
         return new Promise(function (resolve, reject) {
             // load skin theme configuration file, you can manually modify the file. And replace the default skin.
             //加载皮肤主题配置文件,可以手动修改这个文件。替换默认皮肤。
-            // let theme = new eui.Theme("resource/default.thm.json", this.stage);
-            var theme = new eui.Theme("default.thm.json", _this.stage);
+            var theme = new eui.Theme("resource/default.thm.json", _this.stage);
+            // let theme = new eui.Theme("default.thm.json", this.stage);
             theme.addEventListener(eui.UIEvent.COMPLETE, function () {
                 resolve();
             }, _this);
